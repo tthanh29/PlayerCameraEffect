@@ -86,7 +86,7 @@ public class PlayerCameraEffectPlugin extends JavaPlugin implements Listener, Co
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 
