@@ -9,18 +9,18 @@ public enum CameraEffect {
 	ENDERMAN(EntityType.ENDERMAN),
 	SPIDER(EntityType.SPIDER);
 	
-	private EntityType selected_type;
+	private final EntityType type;
 	
-	private CameraEffect(EntityType type){
-		this.selected_type = type;
+	CameraEffect(EntityType type){
+		this.type = type;
 	}
 	
 	public EntityType getEntityType(){
-		return this.selected_type;
+		return this.type;
 	}
 	
-	public static CameraEffect getCameraEffect(String str){
-		for(CameraEffect effect:values()){
+	public static CameraEffect getByName(String str) {
+		for(CameraEffect effect : values()){
 			if(effect.name().equalsIgnoreCase(str))
 				return effect;
 		}
