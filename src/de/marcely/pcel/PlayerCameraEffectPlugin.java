@@ -42,7 +42,7 @@ public class PlayerCameraEffectPlugin extends JavaPlugin implements Listener, Co
 		if(!MAKING_PLAYERS.contains(p)) {
 			MAKING_PLAYERS.add(p);
 
-			final Location pLoc = p.getLocation().clone();
+			final Location pLoc = p.getLocation();
 			Entity entityToSpectate = p.getWorld().spawnEntity(pLoc, cam.getEntityType());
 
 			p.setGameMode(GameMode.SPECTATOR);
