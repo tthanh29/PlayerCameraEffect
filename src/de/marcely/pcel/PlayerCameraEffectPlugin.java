@@ -20,47 +20,26 @@ import org.bukkit.util.Vector;
 
 import de.marcely.pcel.versions.Version;
 
-public class PlayerCameraEffectPlugin extends JavaPlugin {
+public class PlayerCameraEffectPlugin extends JavaPlugin implements Listener, CommandExecutor {
 	
-	public static Plugin plugin;
-	
-	private static List<Player> makingPlayers = new ArrayList<Player>();
+	private static final List<Player> MAKING_PLAYERS = new ArrayList<Player>();
 	
 	@Override
-	public void onEnable(){
-		plugin = this;
-		
-		Bukkit.getPluginManager().registerEvents(listener, this);
-		getCommand("pce").setExecutor(new Command());
+	public void onEnable(){		
+		Bukkit.getPluginManager().registerEvents(this, this);
+		getCommand("pce").setExecutor(this);
 		
 		Version.onEnable();
 	}
 	
-	private Listener listener = new Listener(){
-		@EventHandler(priority = EventPriority.HIGHEST)
-		public void onCreatureSpawnEvent(CreatureSpawnEvent event){
-			for(Player player:makingPlayers){
-				if(PlayerCameraEffectPlugin.equals(player.getLocation(), event.getLocation())){
-					event.setCancelled(false);
-					return;
-				}
-			}
-		}
-		
-		@EventHandler(priority = EventPriority.HIGHEST)
-		public void onPlayerTeleportEvent(PlayerTeleportEvent event){
-			for(Player player:makingPlayers){
-				if(PlayerCameraEffectPlugin.equals(player.getLocation(), event.getTo())){
-					event.setCancelled(false);
-					return;
-				}
-			}
-		}
-	};
+	@Override
+	public void onDisable() {
+		MAKING_PLAYERS.clear();
+	}
 	
 	public static void playEffect(final Player player, CameraEffect effect){
 		// prepare
-		makingPlayers.add(player);
+		MAKING_PLAYERS.add(player);
 		
 		// backup inventory
 		final GameMode gm = player.getGameMode();
@@ -114,10 +93,49 @@ public class PlayerCameraEffectPlugin extends JavaPlugin {
 				player.setVelocity(invVelocity);
 				
 				// done
-				makingPlayers.remove(player);
+				MAKING_PLAYERS.remove(player);
 			}
 		}, 5);
 	}
+	
+	
+	@Override
+	public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args){
+		if(sender instanceof Player || args.length < 1) {
+			return false;
+		}
+		
+		CameraEffect cam = CameraEffect.getCameraEffect(args[0]);
+		Player player = Bukkit.getPlayer(args[1]);
+		
+		if(cam != null && player != null) {
+			PlayerCameraEffectPlugin.playEffect(player, effect);
+			return true;
+		}
+
+		return false;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onCreatureSpawnEvent(CreatureSpawnEvent event){
+		for(Player player : MAKING_PLAYERS){
+			if(PlayerCameraEffectPlugin.equals(player.getLocation(), event.getLocation())){
+				event.setCancelled(false);
+				return;
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerTeleportEvent(PlayerTeleportEvent event){
+		for(Player player : MAKING_PLAYERS){
+			if(PlayerCameraEffectPlugin.equals(player.getLocation(), event.getTo())){
+				event.setCancelled(false);
+				return;
+			}
+		}
+	}
+
 	
 	private static boolean equals(Location loc1, Location loc2){
 		return loc1.getWorld().equals(loc2.getWorld()) &&
