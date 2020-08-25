@@ -4,10 +4,10 @@ import org.bukkit.entity.EntityType;
 
 public enum CameraEffect {
 	
-	Normal(EntityType.VILLAGER),
-	Creeper(EntityType.CREEPER),
-	Enderman(EntityType.ENDERMAN),
-	Spider(EntityType.SPIDER);
+	NORMAL(EntityType.VILLAGER),
+	CREEPER(EntityType.CREEPER),
+	ENDERMAN(EntityType.ENDERMAN),
+	SPIDER(EntityType.SPIDER);
 	
 	private EntityType selected_type;
 	
